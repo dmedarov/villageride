@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="bg">
+  <head>
+    <meta charset="utf-8" />
+    <title>{% block title %}VillageRide – Превози в Осойца{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+
+    <!-- App styles -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body class="theme-light">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a href="{{ url_for('index') }}" class="logo">
+          <span class="logo-mark">V</span>
+          <span class="logo-text">VillageRide</span>
+        </a>
+
+        <nav class="topnav">
+          <a href="{{ url_for('index') }}" class="nav-link">Начало</a>
+          <a href="{{ url_for('admin_dashboard') }}" class="nav-link nav-link-admin">
+            Админ панел
+          </a>
+        </nav>
+
+        <button id="theme-toggle" type="button" class="btn-ghost">
+          🌞 Светла тема
+        </button>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-container">
+              {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+
+    <!-- Leaflet JS -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+
+    <!-- App scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="admin-layout">
+  <aside class="admin-nav">
+    <h2 class="admin-title">Админ панел</h2>
+    <nav>
+      <a href="{{ url_for('admin_dashboard') }}" class="admin-link">Табло</a>
+      <a href="{{ url_for('admin_rides') }}" class="admin-link admin-link-active">Превози</a>
+      <a href="{{ url_for('admin_requests') }}" class="admin-link">Заявки</a>
+      <a href="{{ url_for('admin_logs') }}" class="admin-link">Логове</a>
+      <a href="{{ url_for('admin_logout') }}" class="admin-link admin-link-exit">Изход</a>
+    </nav>
+  </aside>
+
+  <section class="admin-main">
+    <h1>Всички превози</h1>
+    {% if rides %}
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Дата</th>
+            <th>Час</th>
+            <th>От</th>
+            <th>До</th>
+            <th>Шофьор</th>
+            <th>Телефон</th>
+            <th>Тип</th>
+            <th>Места</th>
+            <th>Активен</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rides %}
+          <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.date }}</td>
+            <td>{{ r.time }}</td>
+            <td>{{ r.from_location }}</td>
+            <td>{{ r.to_location }}</td>
+            <td>{{ r.driver }}</td>
+            <td>{{ r.phone }}</td>
+            <td>{{ r.ride_type_label }}</td>
+            <td>{{ r.seats }}</td>
+            <td>{{ 'Да' if r.is_active else 'Не' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="empty">Няма записани превози.</p>
+    {% endif %}
+  </section>
+</section>
+{% endblock %}

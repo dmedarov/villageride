@@ -1,0 +1,365 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<section class="hero">
+  <h1>Споделени превози за Осойца</h1>
+  <p class="hero-subtitle">
+    Лесен и безопасен начин хората в селото да стигат до работа, училище и лекар.
+  </p>
+</section>
+
+<section class="grid-two">
+  <!-- Лява колона: Предложи превоз -->
+  <div class="card">
+    <header class="card-header">
+      <h2>Предложи превоз</h2>
+      <p class="card-subtitle">
+        Ако пътуваш с кола – предложи свободните места на съседи.
+      </p>
+    </header>
+
+    <form method="post" action="{{ url_for('offer_ride') }}" class="form">
+      <div class="form-group">
+        <label for="offer-driver">Име на шофьора</label>
+        <input
+          id="offer-driver"
+          name="driver"
+          type="text"
+          required
+          placeholder="напр. Иван Петров"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="offer-phone">Телефон</label>
+        <input
+          id="offer-phone"
+          name="phone"
+          type="tel"
+          required
+          placeholder="напр. 0888 123 456"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="offer-from">От</label>
+        <input
+          id="offer-from"
+          name="from_location"
+          type="text"
+          required
+          placeholder="напр. Осойца"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="offer-to">До</label>
+        <input
+          id="offer-to"
+          name="to_location"
+          type="text"
+          required
+          placeholder="напр. София, болница, училище…"
+        />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="offer-date">Дата</label>
+          <input id="offer-date" name="date" type="date" required />
+        </div>
+        <div class="form-group">
+          <label for="offer-time">Час</label>
+          <input id="offer-time" name="time" type="time" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="offer-seats">Свободни места</label>
+          <input
+            id="offer-seats"
+            name="seats"
+            type="number"
+            min="1"
+            max="8"
+            value="3"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="offer-type">Тип превоз</label>
+          <select id="offer-type" name="ride_type" required>
+            <option value="work">За работа</option>
+            <option value="school">За училище</option>
+            <option value="healthcare">За здраве</option>
+            <option value="other">Друг</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Скритите координати за карта -->
+      <input type="hidden" name="offer_from_lat" />
+      <input type="hidden" name="offer_from_lng" />
+      <input type="hidden" name="offer_to_lat" />
+      <input type="hidden" name="offer_to_lng" />
+
+      <button type="submit" class="btn-primary w-full">
+        🚗 Публикувай превоз
+      </button>
+
+      <p class="form-hint">
+        Съвет: можеш да цъкнеш на картата долу, за да попълниш автоматично
+        „От“ и „До“ по реално място.
+      </p>
+    </form>
+  </div>
+
+  <!-- Дясна колона: табове „Налични превози“ / „Търся превоз“ -->
+  <div class="card">
+    <header class="card-header card-header-tabs">
+      <div class="tabs">
+        <button
+          class="tab-link tab-active"
+          data-tab-target="#rides-tab"
+          type="button"
+        >
+          Налични превози
+        </button>
+        <button
+          class="tab-link"
+          data-tab-target="#requests-tab"
+          type="button"
+        >
+          Търся превоз
+        </button>
+      </div>
+    </header>
+
+    <div class="tab-panels">
+      <!-- Tab: налични превози (шофьори) -->
+      <section id="rides-tab" class="tab-panel tab-panel-active">
+        {% if rides %}
+        <ul class="ride-list">
+          {% for r in rides %}
+          <li class="ride-item">
+            <div class="ride-main">
+              <div class="ride-title">
+                <strong>{{ r.driver }}</strong>
+                <span class="ride-type-badge">
+                  {{ r.ride_type_label }}
+                </span>
+              </div>
+              <div class="ride-route">
+                {{ r.from_location }} → {{ r.to_location }}
+              </div>
+              <div class="ride-meta">
+                <span>{{ r.date }} • {{ r.time }}</span>
+                <span>{{ r.seats }} свободни места</span>
+              </div>
+            </div>
+            <div class="ride-actions">
+              {% if r.phone %}
+              <a class="btn-outline" href="tel:{{ r.phone }}">📞 Обади се</a>
+              {% endif %}
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty">
+          Все още няма публикувани превози. Стани първият, който ще предложи.
+        </p>
+        {% endif %}
+      </section>
+
+      <!-- Tab: Търся превоз (пътници) -->
+      <section id="requests-tab" class="tab-panel">
+        <form method="post" action="{{ url_for('request_ride') }}" class="form">
+          <div class="form-group">
+            <label for="request-passenger">Име</label>
+            <input
+              id="request-passenger"
+              name="passenger"
+              type="text"
+              required
+              placeholder="напр. Мария Иванова"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="request-phone">Телефон</label>
+            <input
+              id="request-phone"
+              name="phone"
+              type="tel"
+              required
+              placeholder="напр. 0888 456 789"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="request-from">От</label>
+            <input
+              id="request-from"
+              name="from_location"
+              type="text"
+              required
+              placeholder="напр. Осойца"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="request-to">До</label>
+            <input
+              id="request-to"
+              name="to_location"
+              type="text"
+              required
+              placeholder="напр. София, болница, училище…"
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="request-date">Дата</label>
+              <input id="request-date" name="date" type="date" required />
+            </div>
+            <div class="form-group">
+              <label for="request-time">Предпочитан час</label>
+              <input id="request-time" name="time" type="time" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="request-time-flex">Гъвкавост</label>
+              <select id="request-time-flex" name="time_flex" required>
+                <option value="flex_30m">± 30 мин</option>
+                <option value="flex_1h">± 1 час</option>
+                <option value="morning">По-скоро сутрин</option>
+                <option value="afternoon">По-скоро следобед</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="request-people-count">Брой хора</label>
+              <input
+                id="request-people-count"
+                name="people_count"
+                type="number"
+                min="1"
+                max="4"
+                value="1"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="request-note">Бележка (по избор)</label>
+            <textarea
+              id="request-note"
+              name="note"
+              rows="2"
+              placeholder="напр. с дете, с куфар, с количка…"
+            ></textarea>
+          </div>
+
+          <!-- Hidden coords за заявката -->
+          <input type="hidden" name="request_from_lat" />
+          <input type="hidden" name="request_from_lng" />
+          <input type="hidden" name="request_to_lat" />
+          <input type="hidden" name="request_to_lng" />
+
+          <button type="submit" class="btn-primary w-full">
+            🙋‍♀️ Публикувай заявка „Търся превоз“
+          </button>
+        </form>
+
+        <h3 class="section-title mt-4">Активни заявки</h3>
+        {% if requests %}
+        <ul class="ride-list">
+          {% for req in requests %}
+          <li class="ride-item">
+            <div class="ride-main">
+              <div class="ride-title">
+                <strong>{{ req.passenger }}</strong>
+                <span class="ride-type-badge badge-request">
+                  Търсен превоз
+                </span>
+              </div>
+              <div class="ride-route">
+                {{ req.from_location }} → {{ req.to_location }}
+              </div>
+              <div class="ride-meta">
+                <span>
+                  {{ req.date }} • {{ req.time }}
+                  {% if req.time_flex_label %}
+                    ({{ req.time_flex_label }})
+                  {% endif %}
+                </span>
+                <span>{{ req.people_count }} човек/а</span>
+              </div>
+              {% if req.note %}
+              <div class="ride-note">
+                <em>{{ req.note }}</em>
+              </div>
+              {% endif %}
+            </div>
+            <div class="ride-actions">
+              {% if req.phone %}
+              <a class="btn-outline" href="tel:{{ req.phone }}">📞 Обади се</a>
+              {% endif %}
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty">
+          Все още няма активни заявки. Добави своята, ако търсиш превоз.
+        </p>
+        {% endif %}
+      </section>
+    </div>
+  </div>
+</section>
+
+<!-- Карта -->
+<section class="card map-card">
+  <header class="card-header">
+    <h2>Карта на превозите</h2>
+    <div class="map-modes">
+      <button
+        type="button"
+        class="pill-button"
+        data-map-mode="from"
+      >
+        Маркирай „От“
+      </button>
+      <button
+        type="button"
+        class="pill-button"
+        data-map-mode="to"
+      >
+        Маркирай „До“
+      </button>
+    </div>
+  </header>
+
+  <div id="map"></div>
+
+  <div class="map-legend">
+    <span class="legend-item legend-work">Превоз за работа</span>
+    <span class="legend-item legend-school">Превоз за училище</span>
+    <span class="legend-item legend-healthcare">Превоз за здраве</span>
+    <span class="legend-item legend-other">Друг превоз</span>
+    <span class="legend-item legend-request">Търсен превоз</span>
+  </div>
+</section>
+
+<script>
+  window.ridesData = {{ rides_for_map|tojson|safe }};
+  window.requestsData = {{ requests_for_map|tojson|safe }};
+</script>
+
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="card card-narrow">
+  <header class="card-header">
+    <h2>Админ вход</h2>
+    <p class="card-subtitle">
+      Вход за администратори на VillageRide.
+    </p>
+  </header>
+
+  <form method="post" class="form">
+    <div class="form-group">
+      <label for="username">Потребителско име</label>
+      <input id="username" name="username" type="text" required />
+    </div>
+    <div class="form-group">
+      <label for="password">Парола</label>
+      <input id="password" name="password" type="password" required />
+    </div>
+
+    <button type="submit" class="btn-primary w-full">Вход</button>
+  </form>
+</section>
+{% endblock %}

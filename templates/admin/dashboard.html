@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="admin-layout">
+  <aside class="admin-nav">
+    <h2 class="admin-title">Админ панел</h2>
+    <nav>
+      <a href="{{ url_for('admin_dashboard') }}" class="admin-link admin-link-active">Табло</a>
+      <a href="{{ url_for('admin_rides') }}" class="admin-link">Превози</a>
+      <a href="{{ url_for('admin_requests') }}" class="admin-link">Заявки</a>
+      <a href="{{ url_for('admin_logs') }}" class="admin-link">Логове</a>
+      <a href="{{ url_for('admin_logout') }}" class="admin-link admin-link-exit">Изход</a>
+    </nav>
+  </aside>
+
+  <section class="admin-main">
+    <h1>Обобщение</h1>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Общо превози</div>
+        <div class="kpi-value">{{ total_rides }}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Превози днес</div>
+        <div class="kpi-value">{{ rides_today }}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Предстоящи превози</div>
+        <div class="kpi-value">{{ upcoming_rides }}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Активни заявки</div>
+        <div class="kpi-value">{{ active_requests }}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Заявки днес</div>
+        <div class="kpi-value">{{ requests_today }}</div>
+      </div>
+    </div>
+  </section>
+</section>
+{% endblock %}
